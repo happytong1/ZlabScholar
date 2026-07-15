@@ -59,8 +59,8 @@ npm run build
 构建脚本不是默认的 `vite build`，而是 `scripts/build-sites.js`。它会：
 
 1. 将 Vite 前端产物构建到 `dist/public`。
-2. 把静态资源嵌入 `dist/server/index.js`。
-3. 生成可通过 Node 启动、适合通用云服务器部署的单文件资源服务器。
+2. 将本地论文复制到 `dist/public/papers`。
+3. 生成 `dist/server/index.js`，由 Node 直接读取 `dist/public` 中的静态文件，适合通用云服务器部署。
 
 ### 生产模式
 
@@ -78,13 +78,13 @@ http://localhost:3000/
 
 交接时开发服务器仍在运行：
 
-- PID：`30492`
+- PID：`28992`
 - 地址：`http://localhost:5173/`
 
 停止它：
 
 ```powershell
-Stop-Process -Id 30492
+Stop-Process -Id 28992
 ```
 
 如果 PID 已变化，使用：
@@ -113,6 +113,7 @@ Get-Process -Name node
 - 点击成员卡片头像或姓名进入个人主页。
 - 论文作者列表中，已经建档的中英文作者姓名可以点击进入个人主页。
 - `openProfile()` 与 `openMembers()` 使用 `history.replaceState()` 修改 hash。
+- 所有成员主页的研究方向统一由 `ResearchLinks` 组件渲染，方向右侧带低对比度阴影样式的“修改方向”入口；当前点击仅显示待接入提示，尚未持久化编辑。
 
 已知限制：没有监听 `hashchange` / `popstate`，浏览器前进后退行为不完整。后续应改为正式路由。
 
@@ -152,6 +153,7 @@ Get-Process -Name node
 - 身份：数据科学方向博士研究生
 - 单位：College of Artificial Intelligence, Taiyuan University of Technology
 - 邮箱：`2024319017@link.tyut.edu.cn`
+- ORCID：`https://orcid.org/0009-0004-5900-4556`
 - 研究领域：Complex Systems、Amorphous Materials、AI for Science
 - 当前自动归集论文：6 篇
 
@@ -162,20 +164,26 @@ Get-Process -Name node
 - 单位：Key Laboratory for Satellite Digitalization Technology, Innovation Academy for Microsatellites of Chinese Academy of Sciences
 - 单位官网：`https://www.microsate.ac.cn/`
 - 邮箱：`wangxinyao@microsate.ac.cn`
+- ORCID：`https://orcid.org/0009-0001-3326-7030`
 - 研究领域：Systems Engineering、Manned/Unmanned Collaboration、Computer Vision
-- 当前自动归集论文：9 篇（3 篇原有共同作者论文 + `papers/wangxinyao` 中录入的 6 篇）
+- 当前自动归集论文：11 篇（包含 `papers/wangxinyao` 中录入的 6 篇，以及郑文目录中与王新尧共同署名的 2 篇新论文）
 
 ### 郑文 / Wen Zheng
 
-- 身份：教师
-- 当前单位、邮箱尚未提供，页面使用“待补充”。
+- 身份：研究员、副主任
+- 单位：Key Laboratory for Satellite Digitalization Technology, Innovation Academy for Microsatellites of Chinese Academy of Sciences
+- 单位官网：`https://www.microsate.ac.cn/`
+- 邮箱：`zhengwen@microsate.ac.cn`
+- 个人主页：`https://microsate.cas.cn/sourcedb/zw/gbzjrc/jcqn/202404/t20240403_7075517.html`
+- ORCID：`https://orcid.org/0000-0002-6570-6245`
 - 研究领域根据现有论文暂设为 Machine Learning、AI for Science、Computer Vision。
-- 当前自动归集论文：5 篇。
+- 当前自动归集论文：23 篇。
 
 ### 李卓杭 / Zhuohang Li
 
 - 身份：博士研究生
 - 当前单位、邮箱尚未提供，页面使用“待补充”。
+- ORCID：`https://orcid.org/0009-0007-9834-1370`
 - 研究领域根据现有论文暂设为 Computer Vision、Remote Sensing、AI for Science。
 - 当前自动归集论文：2 篇。
 
@@ -184,11 +192,12 @@ Get-Process -Name node
 - 英文名 `Yi Yuan` 是按中文名暂定，尚未由用户确认。
 - 身份：博士研究生
 - 单位、邮箱、研究方向均待补充。
+- 未找到能够排除同名并可靠对应本人的 ORCID，页面不显示 ORCID 链接。
 - 当前没有论文记录，主页显示 0 篇。
 
 ## 7. 论文数据与展示规则
 
-论文数据定义在 `src/App.jsx` 的 `initialPapers` 数组中，目前共 12 条。
+论文数据定义在 `src/App.jsx` 的 `initialPapers` 数组中，目前共 29 条。
 
 ### 自动归集逻辑
 
@@ -205,6 +214,14 @@ Get-Process -Name node
 - 期刊名只显示期刊名称，不附带卷号、期号和页码。
 - DOI 和摘要在详情弹窗中显示。
 - 已建档作者姓名可以点击进入成员主页。
+
+### 摘要数据
+
+- 29 篇内置论文均已补成完整的多句摘要，不再使用一句话占位简介。
+- 页面实际使用 `src/App.jsx` 中的 `fullPaperAbstracts`，初始化论文状态时按 `id` 覆盖 `initialPapers` 里原来的短摘要。
+- 有本地 PDF 的论文优先依据原文摘要整理；中文论文保留中文，英文论文保留英文。
+- 没有本地 PDF 的论文依据 DOI/出版社公开页面整理，避免凭标题扩写。
+- 详情弹窗已有 `max-height: 90vh` 和内部滚动，长摘要在桌面及移动端不会撑出视口。
 
 ### 中文论文规则
 
@@ -233,9 +250,15 @@ Get-Process -Name node
 5. `王新尧_2025_IEEE Aerospace and Electronic Systems Magazine_Evaluation of Crewed-Uncrewed Aerial Vehicle Collaborative Operation System Effectiveness Based on AMC-HFADC.pdf`
 6. `王新尧_2026_Arabian Journal for Science and Engineering_CT-Mono Leveraging CNNs and Transformers for Self-Supervised Depth Estimation in Single-View Scenarios.pdf`
 
-这些 PDF 没有放在 `public/` 中，所以网页目前不能直接下载或打开本地 PDF。平台展示的是从 PDF 首页提取后硬编码进 `initialPapers` 的元数据。
+这些 PDF 保存在 `papers/` 中。开发服务器通过受限的 `/papers/` 路由读取本地文件；生产构建会把它们复制到 `dist/public/papers`，由 Node 静态资源服务器读取，因此网页可以直接下载已登记的本地 PDF。
 
 为读取 PDF，开发环境用户级 Python 中安装过 `pypdf 6.14.2`；它不是项目运行依赖，也没有写进 `package.json`。
+
+### `papers/zhengwen` 文献目录
+
+目录中有 18 个 PDF。两份 `Plug-and-Play PPO` 文件的 SHA-256 完全相同，因此平台只录入一次；其余文件共形成 17 条唯一论文记录。文件名前缀日期不一定是正式出版时间，平台以论文首页和 DOI 登记元数据为准，例如 YOLO-SEA 与 MCAUnet 均按正式出版年份 2025 展示。
+
+新增论文的引用量统一按 Crossref `is-referenced-by-count` 口径于 2026-07-15 核对，并记录 `citationSource` 与 `citationUpdatedAt`。Crossref 未稳定收录的 3 篇中文论文使用 `null`，页面显示 `—`，没有误写为 0。
 
 ## 9. 引用数据现状
 
@@ -246,6 +269,7 @@ Get-Process -Name node
 - 数字表示已经通过公开网站核对过的值。
 - `null` 表示当前引用库没有稳定收录，页面显示 `—`。
 - 不得把“未查询/未收录”写成 `0`。
+- 郑文目录新增论文采用 Crossref 统一口径，最近核对日期为 2026-07-15；页面统计区和论文详情会显示核对日期。
 
 王新尧目录文献当前值：
 
@@ -299,13 +323,19 @@ zlab-avatar                 # 申童童旧头像兼容键
 ## 11. 其他已完成功能
 
 - 亮色/暗色主题，并保存到 `localStorage`。
+- 暗色主题使用低对比度灰黑背景和低饱和紫色，减少高亮与发光感；主题切换按钮使用独立的柔和圆角底色。
+- 顶部导航不显示“登录”入口，保留课题组成员与成果管理入口。
 - 全局论文搜索。
 - 按年份筛选。
+- 论文列表分页，每页最多显示 10 篇；搜索、年份筛选、排序或切换成员时自动回到第 1 页。
+- 论文表头支持按年份和引用次数排序：默认年份降序 `↓`，再次点击切换升序 `↑`；切换排序字段时箭头只显示在当前字段，未收录引用始终排在数值记录之后。
+- 每篇论文右侧显示下载按钮；存在 `pdfAsset` 的论文直接下载 `papers/` 中的本地 PDF，没有本地文件时按钮保持可见但禁用。
 - 论文详情弹窗。
 - DOI 外链。
 - 开放获取标识和比例。
 - 引用柱状图。
 - 合作者卡片和部分成员主页跳转。
+- 主要合作者根据当前成员论文作者自动统计；郑文显示合作篇数最高的前 8 位，其他成员显示前 3 位，已建档成员可点击进入主页。
 - 添加论文演示表单。
 - 响应式桌面、平板、手机布局。
 - 单位链接下划线设置为连续显示：`text-decoration-skip-ink: none`。
@@ -321,7 +351,7 @@ zlab-avatar                 # 申童童旧头像兼容键
 
 ### 12.2 个人资料不完整
 
-- 郑文、李卓杭、袁易缺少准确单位、邮箱等信息。
+- 李卓杭、袁易缺少准确单位、邮箱等信息；郑文的研究领域仍为根据现有论文暂设。
 - 袁易英文名尚未确认。
 - 不要自行搜索到同名人员后直接填入，必须由用户确认身份。
 
@@ -353,7 +383,7 @@ zlab-avatar                 # 申童童旧头像兼容键
 
 ### 12.7 版本控制
 
-当前目录已初始化为 Git 仓库，默认分支为 `main`，并已建立首个基线提交。后续修改应保持提交边界清晰，避免把无关改动混入同一提交。
+当前目录已初始化为 Git 仓库，默认分支为 `main`，仅使用本地版本控制，没有配置远程仓库。Git 本地身份为 `tongtong <1355718091@qq.com>`。本次可用版本计划以 `[0715] 21:06项目功能完善` 提交，包含成员页、郑文文献、完整摘要、排序分页、本地 PDF 下载、主题 UI、复用研究方向入口以及通用云服务器构建支持。后续修改应保持提交边界清晰，避免把无关改动混入同一提交。
 
 ## 13. 推荐的下一步顺序
 
@@ -361,7 +391,7 @@ zlab-avatar                 # 申童童旧头像兼容键
 
 向用户确认：
 
-1. 郑文的单位、邮箱、研究领域。
+1. 郑文的研究领域。
 2. 李卓杭的单位、邮箱、研究领域。
 3. 袁易的英文名、单位、邮箱、研究领域。
 4. 原有 3 篇包含 `Xinyao Wang` 的论文是否确属王新尧，避免同名作者混淆。
@@ -437,7 +467,7 @@ src/components/PaperModal.jsx
 11. **不要仅凭同名搜索结果补个人信息。** 成员身份与同名作者必须由用户确认。
 12. **不要继续只用姓名作为长期作者主键。** 同名会造成论文误归集。
 13. **不要假设“添加论文”已经持久化。** 当前刷新会丢失。
-14. **不要假设本地 PDF 能从网页访问。** `papers/` 不在 Vite 公共目录。
+14. **不要绕过现有 PDF 静态资源方案。** 开发环境由 `vite.config.js` 限定 `/papers/` 路由，生产构建由 `scripts/build-sites.js` 复制到 `dist/public/papers`；新增文件必须同步登记 `pdfAsset` 并验证下载。
 15. **读取中文源文件时显式使用 UTF-8。** PowerShell 某些默认编码输出曾造成看似乱码，但源文件本身是 UTF-8。
 16. **大规模机械重写前先确认工作区干净并建立提交点。** 避免覆盖尚未提交的用户改动。
 17. **修改 CSS 时检查文件末尾覆盖规则。** 当前最终样式经常由尾部规则决定。
@@ -462,13 +492,17 @@ npm run build
 8. 头像上传、裁剪、刷新后保留是否正常。
 9. 桌面与手机布局是否没有横向溢出。
 10. 暗色主题下文本、标签和卡片是否可读。
+11. 论文超过 10 篇时是否正确分页，筛选和切换成员后是否回到第 1 页。
+12. 有本地 PDF 的下载按钮是否返回正确文件，无本地 PDF 的按钮是否保持禁用。
 
 ## 16. 交接时最终状态
 
 - 最新 `npm run build`：通过。
 - 开发服务器：HTTP 200，运行于 `http://localhost:5173/`。
-- Node 进程：PID `30492`（可能在后续会话中变化）。
-- 原始 PDF：6 个，仍保存在 `papers/wangxinyao`。
-- Git 仓库已初始化，默认分支为 `main`，首个基线提交已建立。
+- Node 进程：PID `28992`（可能在后续会话中变化）。
+- 原始 PDF：`papers/wangxinyao` 中 6 个，`papers/zhengwen` 中 18 个（其中 2 个内容重复）。
+- 29 篇内置论文均已配置完整的多句摘要，中文论文保持中文摘要。
+- 所有成员主页共用 `ResearchLinks`，并显示低对比度阴影样式的“修改方向”入口；当前仅为待接入提示。
+- Git 仓库默认分支为 `main`，本次定版提交信息为 `[0715] 21:06项目功能完善`，未配置远程仓库。
 - 当前无已知编译错误。
 - 核心阻塞不是构建问题，而是数据确认、持久化、作者身份建模和工程重构。
