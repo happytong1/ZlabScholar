@@ -23,10 +23,12 @@ test("legacy local avatars are upgraded to WebP paths", async t => {
   const dataDir = path.join(testRoot, "data");
   let database = openDatabase({ dataDir });
   database.prepare("UPDATE members SET avatar_data = '/profile-photos/legacy.jpg' WHERE id = 'xinyao'").run();
+  database.prepare("UPDATE members SET avatar_data = '/profile-photos/lizhuohang.webp' WHERE id = 'zhuohang'").run();
   database.close();
 
   database = openDatabase({ dataDir });
   assert.equal(database.prepare("SELECT avatar_data FROM members WHERE id = 'xinyao'").get().avatar_data, "/profile-photos/legacy.webp");
+  assert.equal(database.prepare("SELECT avatar_data FROM members WHERE id = 'zhuohang'").get().avatar_data, "/profile-photos/lizhuohang-v2.webp");
 
   t.after(async () => {
     database.close();

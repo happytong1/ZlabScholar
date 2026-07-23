@@ -57,6 +57,8 @@ export function openDatabase(options = {}) {
     .run(avatarUpgradeTime);
   database.prepare("UPDATE members SET avatar_data = replace(avatar_data, '.png', '.webp'), updated_at = ? WHERE avatar_data GLOB '/profile-photos/*.png'")
     .run(avatarUpgradeTime);
+  database.prepare("UPDATE members SET avatar_data = '/profile-photos/lizhuohang-v2.webp', updated_at = ? WHERE id = 'zhuohang' AND avatar_data = '/profile-photos/lizhuohang.webp'")
+    .run(avatarUpgradeTime);
 
   const adminCount = database.prepare("SELECT COUNT(*) AS count FROM admins").get().count;
   const username = options.adminUsername || process.env.ADMIN_USERNAME;
