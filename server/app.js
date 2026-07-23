@@ -95,8 +95,10 @@ async function serveStatic(request, response, publicDir) {
   try {
     const body = await readFile(absolute);
     const extension = path.extname(absolute).toLowerCase();
-    const headers = { "content-type": contentTypes[extension] || "application/octet-stream" };
+    const headers = { "content-type": contentTypes[extension] || "application/octet-stream", "content-length": body.length };
     if (extension === ".html") headers["cache-control"] = "no-cache";
+    if (pathname.startsWith("/assets/")) headers["cache-control"] = "public, max-age=31536000, immutable";
+    if ([".jpg", ".jpeg", ".png", ".webp", ".svg"].includes(extension)) headers["cache-control"] = "public, max-age=604800, stale-while-revalidate=86400";
     if (extension === ".pdf") headers["content-disposition"] = `attachment; filename*=UTF-8''${encodeURIComponent(path.basename(absolute))}`;
     response.writeHead(200, headers);
     response.end(body);

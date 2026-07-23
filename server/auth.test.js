@@ -18,11 +18,28 @@ test("password hashes are salted and verifiable", () => {
   assert.equal(verifyPassword("wrong-password", first), false);
 });
 
+test("legacy local avatars are upgraded to WebP paths", async t => {
+  const testRoot = await mkdtemp(path.join(tmpdir(), "zlabscholar-avatar-"));
+  const dataDir = path.join(testRoot, "data");
+  let database = openDatabase({ dataDir });
+  database.prepare("UPDATE members SET avatar_data = '/profile-photos/legacy.jpg' WHERE id = 'xinyao'").run();
+  database.close();
+
+  database = openDatabase({ dataDir });
+  assert.equal(database.prepare("SELECT avatar_data FROM members WHERE id = 'xinyao'").get().avatar_data, "/profile-photos/legacy.webp");
+
+  t.after(async () => {
+    database.close();
+    await rm(testRoot, { recursive: true, force: true });
+  });
+});
+
 test("single admin login protects admin APIs", async t => {
   const testRoot = await mkdtemp(path.join(tmpdir(), "zlabscholar-auth-"));
   const publicDir = path.join(testRoot, "public");
   await mkdir(publicDir);
   await writeFile(path.join(publicDir, "index.html"), "<!doctype html><title>test</title>");
+  await writeFile(path.join(publicDir, "avatar.webp"), "avatar");
   const database = openDatabase({ dataDir: path.join(testRoot, "data"), adminUsername: "admin", adminPassword: "a-secure-test-password" });
   const server = createServer(createRequestHandler({ database, publicDir, secureCookies: false }));
   server.listen(0, "127.0.0.1");
@@ -39,6 +56,10 @@ test("single admin login protects admin APIs", async t => {
 
   let response = await fetch(`${baseUrl}/api/auth/status`);
   assert.deepEqual(await response.json(), { authenticated: false, username: null });
+
+  response = await fetch(`${baseUrl}/avatar.webp`);
+  assert.equal(response.headers.get("cache-control"), "public, max-age=604800, stale-while-revalidate=86400");
+  assert.equal(response.headers.get("content-length"), "6");
 
   response = await fetch(`${baseUrl}/api/admin/status`);
   assert.equal(response.status, 401);

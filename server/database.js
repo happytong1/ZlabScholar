@@ -52,6 +52,12 @@ export function openDatabase(options = {}) {
     database.exec("ALTER TABLE members ADD COLUMN avatar_data TEXT NOT NULL DEFAULT ''");
   }
 
+  const avatarUpgradeTime = new Date().toISOString();
+  database.prepare("UPDATE members SET avatar_data = replace(avatar_data, '.jpg', '.webp'), updated_at = ? WHERE avatar_data GLOB '/profile-photos/*.jpg'")
+    .run(avatarUpgradeTime);
+  database.prepare("UPDATE members SET avatar_data = replace(avatar_data, '.png', '.webp'), updated_at = ? WHERE avatar_data GLOB '/profile-photos/*.png'")
+    .run(avatarUpgradeTime);
+
   const adminCount = database.prepare("SELECT COUNT(*) AS count FROM admins").get().count;
   const username = options.adminUsername || process.env.ADMIN_USERNAME;
   const password = options.adminPassword || process.env.ADMIN_PASSWORD;

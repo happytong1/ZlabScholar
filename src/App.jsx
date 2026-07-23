@@ -591,7 +591,7 @@ const fallbackProfiles = {
     email: "2024319017@link.tyut.edu.cn",
     emailNote: "学校邮箱已验证",
     orcid: "https://orcid.org/0009-0004-5900-4556",
-    avatar: "/profile-photos/shentongtong.jpg",
+    avatar: "/profile-photos/shentongtong.webp",
     verified: true,
     research: ["Complex Systems", "Amorphous Materials", "AI for Science"]
   },
@@ -606,7 +606,7 @@ const fallbackProfiles = {
     email: "wangxinyao@microsate.ac.cn",
     emailNote: "联系邮箱",
     orcid: "https://orcid.org/0009-0001-3326-7030",
-    avatar: "/profile-photos/wangxinyao.jpg",
+    avatar: "/profile-photos/wangxinyao.webp",
     verified: false,
     research: ["Systems Engineering", "Manned/Unmanned Collaboration", "Computer Vision"]
   },
@@ -622,7 +622,7 @@ const fallbackProfiles = {
     emailNote: "联系邮箱",
     homepage: "https://microsate.cas.cn/sourcedb/zw/gbzjrc/jcqn/202404/t20240403_7075517.html",
     orcid: "https://orcid.org/0000-0002-6570-6245",
-    avatar: "/profile-photos/zhengwen.png",
+    avatar: "/profile-photos/zhengwen.webp",
     verified: false,
     research: ["Machine Learning", "AI for Science", "Computer Vision"]
   },
@@ -1018,17 +1018,18 @@ function App() {
             <div className="container"><span className="eyebrow">ZLAB RESEARCH GROUP</span><h1>课题组成员</h1><p>汇聚不同研究方向的教师与研究生，展示成员信息与学术成果。</p></div>
           </section>
           <div className="container members-page">
-            {[{title:"教师",subtitle:"Faculty",group:"faculty"},{title:"博士生",subtitle:"Ph.D. Students",group:"phd"},{title:"研究生",subtitle:"Graduate Students",group:"graduate"}].map(group => {
+            {[{title:"教师",subtitle:"Faculty",group:"faculty"},{title:"博士生",subtitle:"Ph.D. Students",group:"phd"},{title:"研究生",subtitle:"Graduate Students",group:"graduate"}].map((group, groupIndex) => {
               const keys = Object.values(profiles).filter(member => member.group === group.group).sort((a, b) => a.sortOrder - b.sortOrder || a.name.localeCompare(b.name)).map(member => member.id);
               return (
               <section className="member-group" key={group.title}>
                 <div className="member-group-heading"><div><h2>{group.title}</h2><span>{group.subtitle}</span></div><em>{keys.length} 人</em></div>
-                {keys.length ? <div className="member-grid">{keys.map(key => {
+                {keys.length ? <div className="member-grid">{keys.map((key, memberIndex) => {
                   const member = profiles[key];
                   const picture = storedAvatar(key);
+                  const priorityAvatar = groupIndex === 0 && memberIndex < 3;
                   return <article className="member-card" key={key}>
                     <button className="member-photo" onClick={() => openProfile(key)} aria-label={`进入${member.name}的主页`}>
-                      {picture ? <img src={picture} alt={`${member.name}头像`}/> : <span>{member.name.split(" ").map(part => part[0]).join("")}</span>}
+                      {picture ? <img src={picture} alt={`${member.name}头像`} width="120" height="132" loading={priorityAvatar ? "eager" : "lazy"} decoding="async" fetchPriority={priorityAvatar ? "high" : "auto"}/> : <span>{member.name.split(" ").map(part => part[0]).join("")}</span>}
                     </button>
                     <div className="member-card-body"><button className="member-name" onClick={() => openProfile(key)}>{member.chineseName} <span>{member.name}</span></button><p><b>研究领域：</b>{member.research.join("、")}</p></div>
                   </article>;
@@ -1064,7 +1065,7 @@ function App() {
           <div className="container profile-grid">
             <div className="avatar">
               {profile.avatar
-                ? <img src={profile.avatar} alt={`${profile.name}头像`}/>
+                ? <img src={profile.avatar} alt={`${profile.name}头像`} width="104" height="104" loading="eager" decoding="async" fetchPriority="high"/>
                 : <svg viewBox="0 0 120 120" role="img" aria-label={`${profile.name}默认头像`}><circle cx="60" cy="60" r="60" fill="#e9e9ff"/><circle cx="60" cy="43" r="22" fill="#6c63d9"/><path d="M22 106c5-28 20-42 38-42s33 14 38 42" fill="#5148bd"/><path d="M36 39c4-19 44-22 49 5-13-3-20-10-24-17-3 8-12 13-25 12" fill="#27234d"/></svg>}
             </div>
             <div className="profile-main">
@@ -1140,7 +1141,7 @@ function App() {
         </>}
       </main>
 
-      <footer><div className="container"><span>ZlabScholar · Zlab 实验室成果展示</span><span>论文信息依据出版社页面整理 · 引用数据可能随来源更新</span></div></footer>
+      <footer><div className="container"><span>ZlabScholar v0.1.1 · Zlab 实验室成果展示</span><span>论文信息依据出版社页面整理 · 引用数据可能随来源更新</span></div></footer>
 
       {detail && <div className="modal-backdrop" onMouseDown={e => e.target === e.currentTarget && setDetail(null)}><div className="modal detail-modal" role="dialog" aria-modal="true"><button className="modal-close" onClick={() => setDetail(null)}><CloseIcon/></button><span className="eyebrow">论文详情 · {detail.year}</span><h2>{detail.title}</h2><p className="detail-authors">{detail.authors}</p><div className="detail-info"><div><span>发表刊物</span><b>{detail.venue}</b></div><div><span>引用次数</span><b>{detail.citations ?? "未收录"}</b></div><div><span>开放获取</span><b>{detail.open ? "是" : "否"}</b></div></div>{detail.citationUpdatedAt && <p className="demo-note">引用数据核对于 {detail.citationUpdatedAt}</p>}<h4>摘要</h4><p className="abstract">{detail.abstract}</p><div className="doi"><span>DOI</span><code>{detail.doi}</code></div><div className="modal-actions"><button onClick={() => notify("引用已复制（演示）")}>复制引用</button><button className="primary-button" onClick={() => detail.doi.startsWith("10.") ? window.open(`https://doi.org/${detail.doi}`, "_blank", "noopener,noreferrer") : notify("该论文 DOI 尚未公开")}>访问论文 ↗</button></div></div></div>}
 
