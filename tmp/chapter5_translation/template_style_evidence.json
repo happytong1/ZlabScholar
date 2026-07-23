@@ -1,0 +1,80 @@
+{
+  "input": "C:\\Users\\13557\\Desktop\\zlabscholar\\tmp\\chapter5_translation\\template.docx",
+  "fonts_by_char_count": {
+    "Times New Roman": 52
+  },
+  "direct_run_formatting_runs": 6,
+  "direct_paragraph_formatting_paragraphs": 4,
+  "heading_like_paragraphs_not_heading_style": [
+    {
+      "para_index": 7,
+      "text": "AI- and MBSE-Based Agile Satellite Design",
+      "style": "Normal"
+    },
+    {
+      "para_index": 9,
+      "text": "CHAPTER 5",
+      "style": "Normal"
+    },
+    {
+      "para_index": 12,
+      "text": "5.1 Analysis of Satellite Functions and Indicators",
+      "style": "Normal"
+    }
+  ],
+  "examples": {
+    "direct_paragraph_formatting": [
+      {
+        "para_index": 7,
+        "text": "AI- and MBSE-Based Agile Satellite Design",
+        "style": "Normal"
+      },
+      {
+        "para_index": 9,
+        "text": "CHAPTER 5",
+        "style": "Normal"
+      },
+      {
+        "para_index": 10,
+        "text": "Decomposition of Digital Satellite Design Indicators",
+        "style": "Heading 1"
+      },
+      {
+        "para_index": 13,
+        "text": "Within the MBSE framework, satellite functional modeling and indicator modeling provide the essential support for moving",
+        "style": "Normal"
+      }
+    ],
+    "direct_run_formatting": [
+      {
+        "para_index": 7,
+        "run_text": "AI- and MBSE-Based Agile Satellite Design",
+        "style": "Normal"
+      },
+      {
+        "para_index": 9,
+        "run_text": "CHAPTER ",
+        "style": "Normal"
+      },
+      {
+        "para_index": 9,
+        "run_text": "5",
+        "style": "Normal"
+      },
+      {
+        "para_index": 10,
+        "run_text": "Decomposition of Digital Satellite Design Indicators",
+        "style": "Heading 1"
+      },
+      {
+        "para_index": 12,
+        "run_text": "5.1 Analysis of Satellite Functions and Indicators",
+        "style": "Normal"
+      }
+    ]
+  },
+  "notes": [
+    "Direct formatting is not always wrong, but it often causes inconsistent output when templates change.",
+    "Heading-like paragraphs not using Heading styles can break TOC and accessibility."
+  ]
+}

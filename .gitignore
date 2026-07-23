@@ -1,6 +1,8 @@
 node_modules/
 .next/
 dist/
+data/
+.admin-credentials*
 .env*
 npm-debug.log*
 .DS_Store

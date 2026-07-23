@@ -1,11 +1,59 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "../app/globals.css";
 
 const CITATION_UPDATED_AT = "2026-07-15";
 const CITATION_SOURCE = "Crossref";
 const PAPERS_PER_PAGE = 10;
+const QUARTILE_STANDARD = "SCI/JCR 2026（取各学科最佳分区）；中科院 2025 终版（2026 年沿用）";
+
+const JOURNAL_QUARTILES = {
+  "Scientific Reports": { sci: "SCI Q1", cas: "中科院3区" },
+  "Applied Sciences": { sci: "SCI Q2", cas: "中科院4区" },
+  "Chinese Physics B": { sci: "SCI Q3", cas: "中科院3区" },
+  "Transplantation Proceedings": { sci: "SCI Q4", cas: "中科院4区" },
+  "IEEE Geoscience and Remote Sensing Letters": { sci: "SCI Q1", cas: "中科院3区" },
+  "International Journal of Imaging Systems and Technology": { sci: "SCI Q2", cas: "中科院4区" },
+  "Aerospace": { sci: "SCI Q2", cas: "中科院3区" },
+  "IEEE Aerospace and Electronic Systems Magazine": { sci: "SCI Q1", cas: "中科院3区" },
+  "Arabian Journal for Science and Engineering": { sci: "SCI Q2", cas: "中科院4区" },
+  "Bioinformatics": { sci: "SCI Q1", cas: "中科院3区" },
+  "Expert Systems with Applications": { sci: "SCI Q1", cas: "中科院1区" },
+  "Genes": { sci: "SCI Q2", cas: "中科院3区" },
+  "Engineering Applications of Artificial Intelligence": { sci: "SCI Q1", cas: "中科院1区" },
+  "IEEE Transactions on Instrumentation and Measurement": { sci: "SCI Q1", cas: "中科院2区" },
+  "Journal of Marine Science and Engineering": { sci: "SCI Q2", cas: "中科院3区" },
+  "Entropy": { sci: "SCI Q2", cas: "中科院3区" },
+  "BMC Medical Imaging": { sci: "SCI Q1", cas: "中科院3区" },
+  "Science China Chemistry": { sci: "SCI Q1", cas: "中科院1区" }
+};
+
+const NON_SCI_JOURNAL_VENUES = new Set([
+  "无人系统技术",
+  "系统工程与电子技术",
+  "计算机工程与科学",
+  "电子科技大学学报",
+  "计算机工程与设计",
+  "岩土工程学报",
+  "爆炸与冲击",
+  "高压物理学报",
+  "力学学报"
+]);
+
+const NON_JOURNAL_VENUES = new Set([
+  "Medical Image Computing and Computer Assisted Intervention – MICCAI 2024",
+  "Research Square",
+  "IEEE/CVF Conference on Computer Vision and Pattern Recognition",
+  "Hands-On Research in Complex Systems School (学术海报)"
+]);
+
+function journalQuartiles(venue) {
+  if (JOURNAL_QUARTILES[venue]) return JOURNAL_QUARTILES[venue];
+  if (NON_JOURNAL_VENUES.has(venue)) return { sci: "非期刊", cas: "不适用" };
+  if (NON_SCI_JOURNAL_VENUES.has(venue)) return { sci: "非 SCI", cas: "不适用" };
+  return { sci: "待核实", cas: "待核实" };
+}
 
 const initialPapers = [
   {
@@ -40,7 +88,7 @@ const initialPapers = [
     year: 2026,
     citations: 0,
     open: false,
-    doi: "Pending assignment",
+    doi: "10.1088/1674-1056/ae843a",
     keywords: ["Amorphous Materials", "Stress Overshoot", "Interpretable AI"],
     abstract: "An interpretable convolutional-temporal model is used to predict stress-overshoot behavior from pre-yield configurations and to characterize model-salient structural signatures in amorphous systems."
   },
@@ -389,6 +437,78 @@ const initialPapers = [
     doi: "10.1186/s12880-025-01756-4",
     keywords: ["Body Composition", "Liver Cirrhosis", "Medical Image Segmentation"],
     abstract: "MCAUnet uses channel-attention feature fusion to automate CT-based body-composition quantification and supports survival analysis for patients with liver cirrhosis."
+  },
+  {
+    id: 30,
+    title: "岩体中弹性波传播尺度效应的初步分析",
+    authors: "徐松林, 郑文, 刘永贵, 席道瑛, 李广场",
+    venue: "岩土工程学报",
+    year: 2011,
+    citations: null,
+    open: false,
+    doi: "待补充",
+    keywords: ["岩石动力学", "弹性波", "尺度效应", "节理岩体", "量纲分析"],
+    abstract: "含缺陷岩体及其中传播的弹性波具有尺度效应。研究针对两个现场测点，分别采用动态与准静态有限元方法分析不同计算尺度下的弹性波传播规律及波速与围压的关系，并基于量纲分析提出半理论波速公式。与现场测试及随机节理模型的比较表明，该公式能够较好描述节理岩体中的弹性波尺度效应。"
+  },
+  {
+    id: 31,
+    title: "侧限压缩下干燥砂的动态力学性能",
+    authors: "郑文, 徐松林, 胡时胜",
+    venue: "爆炸与冲击",
+    year: 2011,
+    citations: null,
+    open: false,
+    doi: "10.11883/1001-1455(2011)06-0619-05",
+    keywords: ["固体力学", "动态力学性能", "SHPB", "干燥砂", "应变率效应", "预压"],
+    abstract: "通过添加波形整形器的分离式霍普金森压杆，研究侧限条件下干燥砂在不同应变率和不同预压下的动态压缩力学性能，并利用MTS810材料实验系统测得准静态压缩应力应变曲线。结果表明，应变率对干燥砂压缩过程影响不大，而不同预压对实验结果影响显著。"
+  },
+  {
+    id: 32,
+    title: "冲击下花岗岩界面动态摩擦特性实验研究",
+    authors: "徐松林, 郑文, 刘永贵, 郑航",
+    venue: "高压物理学报",
+    year: 2011,
+    citations: null,
+    open: false,
+    doi: "待补充",
+    keywords: ["冲击动力学", "压剪联合冲击", "动态摩擦", "界面滑动"],
+    abstract: "为研究岩石界面动态摩擦性能，实验对房山花岗岩开展不同冲击速度和倾斜角下的横剖试样斜撞击，考察高正应力与高速相对滑移条件下的界面动态摩擦状态。结果为理解地震过程中板块动态摩擦强度的急剧降低提供了实验依据。"
+  },
+  {
+    id: 33,
+    title: "基于Hopkinson压杆的动态压剪复合加载实验研究",
+    authors: "郑文, 徐松林, 蔡超, 胡时胜",
+    venue: "力学学报",
+    year: 2012,
+    citations: null,
+    open: false,
+    doi: "10.6052/0459-1879-2012-1-lxxb2011-103",
+    keywords: ["Hopkinson压杆", "压剪复合加载", "动态力学性能"],
+    abstract: "研究提出一种基于Hopkinson压杆的动态压剪复合加载装置，通过带倾斜剖面的垫块实现压剪联合加载，并给出实验原理与数据处理方法。有限元分析及不同冲击速度、不同倾斜角下的铜试样实验表明，该装置可用于研究复杂应力状态下材料的动态力学性能。"
+  },
+  {
+    id: 34,
+    title: "Onset of shear thinning and thickening in frictionless granular system",
+    authors: "Wen Zheng, Yu Shi, Ning Xu",
+    venue: "Hands-On Research in Complex Systems School (学术海报)",
+    year: 2012,
+    citations: null,
+    open: false,
+    doi: "无 DOI",
+    keywords: ["Shear Thickening", "Granular Materials", "Molecular Dynamics", "Academic Poster"],
+    abstract: "This academic poster uses non-equilibrium molecular-dynamics simulations to study the rheology of two-dimensional frictionless granular materials. It identifies Newtonian, shear-thinning, and shear-thickening regimes, relates the transition to stress overshoot and structural changes in the pair distribution function, and examines how the strength of shear thickening varies with system size."
+  },
+  {
+    id: 35,
+    title: "Signatures of shear thinning-thickening transition in steady shear flows of dense non-Brownian yield stress systems",
+    authors: "Wen Zheng, Yu Shi, Ning Xu",
+    venue: "Science China Chemistry",
+    year: 2015,
+    citations: null,
+    open: false,
+    doi: "10.1007/s11426-015-5335-8",
+    keywords: ["Shear Thickening", "Shear Thinning", "Structural Anisotropy", "Kinetic Temperature"],
+    abstract: "Non-equilibrium molecular-dynamics simulations are used to connect structure, dynamics, and rheology in dense athermal systems composed of soft disks. At low shear rates the systems shear thin because of a nonzero yield stress and then cross over to shear thickening. Structural anisotropy, particle dynamics, and kinetic-temperature scaling all show characteristic signatures near the crossover."
   }
 ];
 
@@ -425,6 +545,9 @@ const fullPaperAbstracts = {
 };
 
 const localPdfAssets = {
+  3: "/papers/shentongtong/申童童_2026_《Chinese Physics B》_Revealing structural signatures associated with stress overshoot in two.pdf",
+  4: "/papers/shentongtong/申童童_2026_《Trans Proceedings》_Preoperative Predictive Modeling of Recurrent Graft Failure.pdf",
+  5: "/papers/lizhuohang/李卓杭_2026_《IEEE GEOSCIENCE AND REMOTE SENSING LETTERS,》_CAFE-Net_Context-Aware_Feature_Enhancement_for_Reliable_Multiscale_Detection_of_Martian_Craters.pdf",
   7: "/papers/wangxinyao/王新尧_2020_无人系统技术_有人机无人机编队协同作战决策系统架构设计.pdf",
   8: "/papers/wangxinyao/王新尧_2020_系统工程与电子技术_基于DoDAF的有人无人机协同作战体系结构建模.pdf",
   9: "/papers/wangxinyao/王新尧_2022_系统工程与电子技术_面向复杂系统需求分析的DSL构建.pdf",
@@ -447,10 +570,16 @@ const localPdfAssets = {
   26: "/papers/zhengwen/2025.8.25-YOLO-GRBI An Enhanced Lightweight Detector for Non-Cooperative Spatial Target in Complex Orbital Environments.pdf",
   27: "/papers/zhengwen/2026.2.15-SAM-APG Prompt-guided Self-training Framework Based on SAM for Nuclei Segmentation with Limited Annotations.pdf",
   28: "/papers/zhengwen/2026.6.22-YOLO-SEA AnEnhanced Detection Framework for Multi-Scale Maritime Targets in Complex Sea States and Adverse Weather.pdf",
-  29: "/papers/zhengwen/2026.7.1-MCAUnet a deep learning framework for automated quantification of body composition in liver cirrhosis patients.pdf"
+  29: "/papers/zhengwen/2026.7.1-MCAUnet a deep learning framework for automated quantification of body composition in liver cirrhosis patients.pdf",
+  30: "/papers/zhengwen/郑文_2011_《岩土工程学报》_岩体中弹性波传播尺度效应的初步分析.pdf",
+  31: "/papers/zhengwen/郑文_2011_《爆炸与冲击》_侧限压缩下干燥砂的动态力学性能.pdf",
+  32: "/papers/zhengwen/郑文_2011_《高压物理学报》_冲击下花岗岩界面动态摩擦特性实验研究.pdf",
+  33: "/papers/zhengwen/郑文_2012_《力学学报》_基于Hopkinson压杆的动态压剪复合加载实验研究.pdf",
+  34: "/papers/zhengwen/郑文_2012_海报_Onset of shear thinning and thickening in frictionless granular system.pdf",
+  35: "/papers/zhengwen/郑文_2015_《Science China Chemistry》_Signatures of shear thinning-thickening transition in steady shear flows of dense non-Brownian yield stress systems.pdf"
 };
 
-const profiles = {
+const fallbackProfiles = {
   tongtong: {
     slug: "tongtong-shen",
     name: "Tongtong Shen",
@@ -462,6 +591,7 @@ const profiles = {
     email: "2024319017@link.tyut.edu.cn",
     emailNote: "学校邮箱已验证",
     orcid: "https://orcid.org/0009-0004-5900-4556",
+    avatar: "/profile-photos/shentongtong.jpg",
     verified: true,
     research: ["Complex Systems", "Amorphous Materials", "AI for Science"]
   },
@@ -476,6 +606,7 @@ const profiles = {
     email: "wangxinyao@microsate.ac.cn",
     emailNote: "联系邮箱",
     orcid: "https://orcid.org/0009-0001-3326-7030",
+    avatar: "/profile-photos/wangxinyao.jpg",
     verified: false,
     research: ["Systems Engineering", "Manned/Unmanned Collaboration", "Computer Vision"]
   },
@@ -491,6 +622,7 @@ const profiles = {
     emailNote: "联系邮箱",
     homepage: "https://microsate.cas.cn/sourcedb/zw/gbzjrc/jcqn/202404/t20240403_7075517.html",
     orcid: "https://orcid.org/0000-0002-6570-6245",
+    avatar: "/profile-photos/zhengwen.png",
     verified: false,
     research: ["Machine Learning", "AI for Science", "Computer Vision"]
   },
@@ -532,18 +664,42 @@ const MoonIcon = () => <Icon><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.
 const SunIcon = () => <Icon><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.42M17.66 6.34l1.41-1.41"/></Icon>;
 const CheckIcon = () => <Icon size={14}><path d="m4 7 2 2 4-5"/></Icon>;
 const CloseIcon = () => <Icon size={20}><path d="M18 6 6 18M6 6l12 12"/></Icon>;
-const CameraIcon = () => <svg width="36" height="32" viewBox="0 0 36 32" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M13 9.5 15.5 6h9L27 9.5h3.5a3 3 0 0 1 3 3V26a3 3 0 0 1-3 3h-20a3 3 0 0 1-3-3V12.5a3 3 0 0 1 3-3H13Z"/><circle cx="20.5" cy="19" r="5"/><path d="M7 2v10M2 7h10"/></svg>;
-
 function ResearchLinks({ topics, onSelect, onEdit }) {
   return (
     <div className="research-links">
       {topics.map(topic => <button className="research-topic" key={topic} onClick={() => onSelect(topic)}>{topic}</button>)}
-      <button className="research-edit" onClick={onEdit} aria-label="修改研究方向">修改方向</button>
+      {onEdit && <button className="research-edit" onClick={onEdit} aria-label="修改研究方向">修改方向</button>}
     </div>
   );
 }
 
+function optimizeAvatarFile(file) {
+  if (!file || !file.size) return Promise.resolve("");
+  if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) return Promise.reject(new Error("请选择 JPG、PNG 或 WebP 图片"));
+  if (file.size > 10 * 1024 * 1024) return Promise.reject(new Error("原始图片不能超过 10 MB"));
+  return new Promise((resolve, reject) => {
+    const sourceUrl = URL.createObjectURL(file);
+    const sourceImage = new Image();
+    sourceImage.onload = () => {
+      const cropSize = Math.min(sourceImage.naturalWidth, sourceImage.naturalHeight);
+      const outputSize = Math.min(640, cropSize);
+      const canvas = document.createElement("canvas");
+      canvas.width = outputSize;
+      canvas.height = outputSize;
+      const context = canvas.getContext("2d");
+      context.imageSmoothingEnabled = true;
+      context.imageSmoothingQuality = "high";
+      context.drawImage(sourceImage, (sourceImage.naturalWidth - cropSize) / 2, (sourceImage.naturalHeight - cropSize) / 2, cropSize, cropSize, 0, 0, outputSize, outputSize);
+      URL.revokeObjectURL(sourceUrl);
+      resolve(canvas.toDataURL("image/webp", 0.88));
+    };
+    sourceImage.onerror = () => { URL.revokeObjectURL(sourceUrl); reject(new Error("图片读取失败，请换一张图片")); };
+    sourceImage.src = sourceUrl;
+  });
+}
+
 function App() {
+  const [profiles, setProfiles] = useState(fallbackProfiles);
   const [papers, setPapers] = useState(() => initialPapers.map(paper => ({
     ...paper,
     abstract: fullPaperAbstracts[paper.id] || paper.abstract,
@@ -553,6 +709,7 @@ function App() {
   const [view, setView] = useState("members");
   const [query, setQuery] = useState("");
   const [year, setYear] = useState("all");
+  const [firstAuthorOnly, setFirstAuthorOnly] = useState(false);
   const [sort, setSort] = useState({ key: "year", direction: "desc" });
   const [currentPage, setCurrentPage] = useState(1);
   const [following, setFollowing] = useState(false);
@@ -560,13 +717,41 @@ function App() {
   const [addOpen, setAddOpen] = useState(false);
   const [theme, setTheme] = useState("light");
   const [toast, setToast] = useState("");
-  const [avatarImage, setAvatarImage] = useState("");
-  const avatarInputRef = useRef(null);
-  const profile = profiles[activeProfileKey];
+  const [adminAuth, setAdminAuth] = useState({ loading: false, authenticated: false, username: null, error: "" });
+  const [loginPending, setLoginPending] = useState(false);
+  const [memberEditorOpen, setMemberEditorOpen] = useState(false);
+  const [editingMember, setEditingMember] = useState(null);
+  const [memberSaving, setMemberSaving] = useState(false);
+  const [memberError, setMemberError] = useState("");
+  const profile = profiles[activeProfileKey] || Object.values(profiles)[0];
+
+  const applyMembers = members => {
+    const nextProfiles = Object.fromEntries(members.map(member => [member.id, {
+      ...member,
+      avatar: member.avatar || fallbackProfiles[member.id]?.avatar || ""
+    }]));
+    setProfiles(nextProfiles);
+    const hashKey = members.find(member => `#${member.slug}` === window.location.hash)?.id;
+    if (hashKey) {
+      setActiveProfileKey(hashKey);
+      if (view !== "admin") setView("profile");
+    } else if (!nextProfiles[activeProfileKey] && members[0]) {
+      setActiveProfileKey(members[0].id);
+    }
+  };
+
+  const refreshMembers = async () => {
+    const response = await fetch("/api/members", { credentials: "same-origin" });
+    if (!response.ok) throw new Error("成员数据加载失败");
+    const result = await response.json();
+    applyMembers(result.members);
+    return result.members;
+  };
   const profilePapers = useMemo(() => papers.filter(paper => {
     const authors = paper.authors.split(/[,，]\s*/);
     return authors.includes(profile.name) || authors.includes(profile.chineseName);
   }), [papers, profile.name, profile.chineseName]);
+  const profileYears = useMemo(() => [...new Set(profilePapers.map(paper => paper.year))].sort((a, b) => b - a), [profilePapers]);
   const openRate = profilePapers.length ? Math.round(profilePapers.filter(paper => paper.open).length / profilePapers.length * 100) : 0;
 
   const citationStats = useMemo(() => {
@@ -605,6 +790,10 @@ function App() {
   useEffect(() => {
     const saved = localStorage.getItem("zlab-theme");
     if (saved === "dark") setTheme("dark");
+    if (window.location.hash === "#admin") {
+      setView("admin");
+      return;
+    }
     const profileFromHash = Object.entries(profiles).find(([, value]) => `#${value.slug}` === window.location.hash)?.[0];
     if (profileFromHash) {
       setActiveProfileKey(profileFromHash);
@@ -613,9 +802,11 @@ function App() {
   }, []);
 
   useEffect(() => {
-    const legacyAvatar = activeProfileKey === "tongtong" ? localStorage.getItem("zlab-avatar") : "";
-    setAvatarImage(localStorage.getItem(`zlab-avatar-${activeProfileKey}`) || legacyAvatar || "");
-    document.title = view === "profile" ? `${profile.name} · ZlabScholar` : "课题组成员 · ZlabScholar";
+    refreshMembers().catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    document.title = view === "profile" ? `${profile.name} · ZlabScholar` : view === "admin" ? "成果管理 · ZlabScholar" : "课题组成员 · ZlabScholar";
   }, [activeProfileKey, profile.name, view]);
 
   useEffect(() => {
@@ -623,58 +814,25 @@ function App() {
     localStorage.setItem("zlab-theme", theme);
   }, [theme]);
 
+  useEffect(() => {
+    if (view !== "admin") return;
+    setAdminAuth(current => ({ ...current, loading: true, error: "" }));
+    fetch("/api/auth/status", { credentials: "same-origin" })
+      .then(response => response.ok ? response.json() : Promise.reject(new Error("管理员服务暂时不可用")))
+      .then(result => setAdminAuth({ loading: false, authenticated: result.authenticated, username: result.username, error: "" }))
+      .catch(error => setAdminAuth({ loading: false, authenticated: false, username: null, error: error.message }));
+  }, [view]);
+
   const notify = (message) => {
     setToast(message);
     window.setTimeout(() => setToast(""), 2200);
-  };
-
-  const uploadAvatar = event => {
-    const file = event.target.files?.[0];
-    event.target.value = "";
-    if (!file) return;
-    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
-      notify("请选择 JPG、PNG 或 WebP 图片");
-      return;
-    }
-    if (file.size > 10 * 1024 * 1024) {
-      notify("原始图片不能超过 10 MB");
-      return;
-    }
-    const sourceUrl = URL.createObjectURL(file);
-    const sourceImage = new Image();
-    sourceImage.onload = () => {
-      const cropSize = Math.min(sourceImage.naturalWidth, sourceImage.naturalHeight);
-      const outputSize = Math.min(640, cropSize);
-      const offsetX = (sourceImage.naturalWidth - cropSize) / 2;
-      const offsetY = (sourceImage.naturalHeight - cropSize) / 2;
-      const canvas = document.createElement("canvas");
-      canvas.width = outputSize;
-      canvas.height = outputSize;
-      const context = canvas.getContext("2d");
-      context.imageSmoothingEnabled = true;
-      context.imageSmoothingQuality = "high";
-      context.drawImage(sourceImage, offsetX, offsetY, cropSize, cropSize, 0, 0, outputSize, outputSize);
-      const optimizedImage = canvas.toDataURL("image/webp", 0.9);
-      URL.revokeObjectURL(sourceUrl);
-      setAvatarImage(optimizedImage);
-      try {
-        localStorage.setItem(`zlab-avatar-${activeProfileKey}`, optimizedImage);
-        notify("头像已裁剪并压缩");
-      } catch {
-        notify("头像已更新，但无法在刷新后保留");
-      }
-    };
-    sourceImage.onerror = () => {
-      URL.revokeObjectURL(sourceUrl);
-      notify("图片读取失败，请换一张图片");
-    };
-    sourceImage.src = sourceUrl;
   };
 
   const visible = useMemo(() => {
     const q = query.trim().toLowerCase();
     return profilePapers
       .filter(p => year === "all" || String(p.year) === year)
+      .filter(p => !firstAuthorOnly || [profile.name, profile.chineseName].includes(p.authors.split(/[,，]\s*/)[0]))
       .filter(p => !q || [p.title, p.authors, p.venue, p.keywords.join(" ")].join(" ").toLowerCase().includes(q))
       .sort((a, b) => {
         if (sort.key === "citations") {
@@ -687,14 +845,14 @@ function App() {
         const value = sort.key === "title" ? a.title.localeCompare(b.title) : a[sort.key] - b[sort.key];
         return sort.direction === "asc" ? value : -value;
       });
-  }, [profilePapers, query, year, sort]);
+  }, [profilePapers, profile.name, profile.chineseName, query, year, firstAuthorOnly, sort]);
   const totalPages = Math.max(1, Math.ceil(visible.length / PAPERS_PER_PAGE));
   const safePage = Math.min(currentPage, totalPages);
   const paginatedPapers = visible.slice((safePage - 1) * PAPERS_PER_PAGE, safePage * PAPERS_PER_PAGE);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [activeProfileKey, query, year, sort.key, sort.direction]);
+  }, [activeProfileKey, query, year, firstAuthorOnly, sort.key, sort.direction]);
 
   const changeSort = key => setSort(s => ({ key, direction: s.key === key && s.direction === "desc" ? "asc" : "desc" }));
   const arrow = key => sort.key === key ? (sort.direction === "desc" ? " ↓" : " ↑") : "";
@@ -704,6 +862,7 @@ function App() {
     setView("profile");
     setQuery("");
     setYear("all");
+    setFirstAuthorOnly(false);
     setFollowing(false);
     setDetail(null);
     window.history.replaceState(null, "", `#${profiles[key].slug}`);
@@ -719,7 +878,92 @@ function App() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const storedAvatar = key => localStorage.getItem(`zlab-avatar-${key}`) || (key === "tongtong" ? localStorage.getItem("zlab-avatar") : "") || "";
+  const openAdmin = () => {
+    setView("admin");
+    setQuery("");
+    setDetail(null);
+    window.history.replaceState(null, "", "#admin");
+    document.title = "成果管理 · ZlabScholar";
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const loginAdmin = async event => {
+    event.preventDefault();
+    const loginForm = event.currentTarget;
+    setLoginPending(true);
+    setAdminAuth(current => ({ ...current, error: "" }));
+    const form = new FormData(loginForm);
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ username: form.get("username"), password: form.get("password") })
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "登录失败");
+      setAdminAuth({ loading: false, authenticated: true, username: result.username, error: "" });
+      loginForm.reset();
+    } catch (error) {
+      setAdminAuth({ loading: false, authenticated: false, username: null, error: error.message });
+    } finally {
+      setLoginPending(false);
+    }
+  };
+
+  const logoutAdmin = async () => {
+    await fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" });
+    setAdminAuth({ loading: false, authenticated: false, username: null, error: "" });
+    notify("已安全退出管理后台");
+  };
+
+  const openMemberEditor = member => {
+    setEditingMember(member || null);
+    setMemberError("");
+    setMemberEditorOpen(true);
+  };
+
+  const saveMember = async event => {
+    event.preventDefault();
+    const memberForm = event.currentTarget;
+    const form = new FormData(memberForm);
+    const payload = {
+      name: form.get("name"), chineseName: form.get("chineseName"), slug: form.get("slug"), group: form.get("group"),
+      sortOrder: Number(form.get("sortOrder")), affiliation: form.get("affiliation"), affiliationUrl: form.get("affiliationUrl"),
+      role: form.get("role"), roleCn: form.get("roleCn"), email: form.get("email"), emailNote: form.get("emailNote"),
+      homepage: form.get("homepage"), orcid: form.get("orcid"), verified: form.get("verified") === "on",
+      research: String(form.get("research") || "").split(/[,，\n]/).map(value => value.trim()).filter(Boolean),
+      avatar: form.get("removeAvatar") === "on" ? "" : editingMember?.avatar || ""
+    };
+    setMemberSaving(true);
+    setMemberError("");
+    try {
+      const avatarFile = form.get("avatar");
+      if (avatarFile?.size) payload.avatar = await optimizeAvatarFile(avatarFile);
+      const endpoint = editingMember ? `/api/admin/members/${encodeURIComponent(editingMember.id)}` : "/api/admin/members";
+      const response = await fetch(endpoint, { method: editingMember ? "PUT" : "POST", credentials: "same-origin", headers: { "content-type": "application/json" }, body: JSON.stringify(payload) });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "保存失败");
+      await refreshMembers();
+      setMemberEditorOpen(false);
+      notify(editingMember ? "成员资料已更新" : "成员已添加");
+    } catch (error) {
+      setMemberError(error.message);
+    } finally {
+      setMemberSaving(false);
+    }
+  };
+
+  const deleteMember = async member => {
+    if (!window.confirm(`确定删除成员“${member.chineseName || member.name}”吗？`)) return;
+    const response = await fetch(`/api/admin/members/${encodeURIComponent(member.id)}`, { method: "DELETE", credentials: "same-origin" });
+    const result = await response.json();
+    if (!response.ok) return notify(result.error || "删除失败");
+    await refreshMembers();
+    notify("成员已删除");
+  };
+
+  const storedAvatar = key => profiles[key]?.avatar || "";
 
   const authorList = authors => authors.split(/[,，]\s*/).map((author, index, list) => {
     const key = Object.keys(profiles).find(profileKey => profiles[profileKey].name === author || profiles[profileKey].chineseName === author);
@@ -763,7 +1007,7 @@ function App() {
           <div className="nav-actions">
             <button className="icon-button theme-toggle" onClick={() => setTheme(t => t === "light" ? "dark" : "light")} title={theme === "light" ? "切换到暗色主题" : "切换到亮色主题"} aria-label={theme === "light" ? "切换到暗色主题" : "切换到亮色主题"}>{theme === "light" ? <MoonIcon/> : <SunIcon/>}</button>
             <button className="text-button" onClick={openMembers}>课题组成员</button>
-            <button className="primary-button compact" onClick={() => notify("成果管理功能将在后续版本开放")}>管理成果</button>
+            <button className="primary-button compact" onClick={openAdmin}>管理成果</button>
           </div>
         </div>
       </header>
@@ -774,10 +1018,12 @@ function App() {
             <div className="container"><span className="eyebrow">ZLAB RESEARCH GROUP</span><h1>课题组成员</h1><p>汇聚不同研究方向的教师与研究生，展示成员信息与学术成果。</p></div>
           </section>
           <div className="container members-page">
-            {[{title:"教师",subtitle:"Faculty",keys:["xinyao","zhengwen"]},{title:"博士生",subtitle:"Ph.D. Students",keys:["tongtong","zhuohang","yuanyi"]},{title:"研究生",subtitle:"Graduate Students",keys:[]}].map(group => (
+            {[{title:"教师",subtitle:"Faculty",group:"faculty"},{title:"博士生",subtitle:"Ph.D. Students",group:"phd"},{title:"研究生",subtitle:"Graduate Students",group:"graduate"}].map(group => {
+              const keys = Object.values(profiles).filter(member => member.group === group.group).sort((a, b) => a.sortOrder - b.sortOrder || a.name.localeCompare(b.name)).map(member => member.id);
+              return (
               <section className="member-group" key={group.title}>
-                <div className="member-group-heading"><div><h2>{group.title}</h2><span>{group.subtitle}</span></div><em>{group.keys.length} 人</em></div>
-                {group.keys.length ? <div className="member-grid">{group.keys.map(key => {
+                <div className="member-group-heading"><div><h2>{group.title}</h2><span>{group.subtitle}</span></div><em>{keys.length} 人</em></div>
+                {keys.length ? <div className="member-grid">{keys.map(key => {
                   const member = profiles[key];
                   const picture = storedAvatar(key);
                   return <article className="member-card" key={key}>
@@ -788,17 +1034,38 @@ function App() {
                   </article>;
                 })}</div> : <div className="member-empty"><span>＋</span><div><strong>成员信息待添加</strong><p>后续可以在这里添加研究生及其论文成果。</p></div></div>}
               </section>
-            ))}
+            )})}
           </div>
-        </> : <>
+        </> : view === "admin" ? <section className="admin-page">
+          <div className="container admin-container">
+            <div className="admin-heading"><span className="eyebrow">ZLABSCHOLAR ADMIN</span><h1>成果管理</h1><p>公开页面无需登录，成员和论文的修改仅限管理员操作。</p></div>
+            {adminAuth.loading ? <div className="admin-card admin-loading">正在检查登录状态……</div>
+              : adminAuth.authenticated ? <div className="admin-card admin-dashboard">
+                <div><span className="admin-badge">管理员已登录</span><h2>欢迎，{adminAuth.username}</h2><p>你可以在这里维护实验室成员资料，保存后公开页面会立即更新。</p></div>
+                <button type="button" className="text-button admin-logout" onClick={logoutAdmin}>退出登录</button>
+                <section className="member-manager">
+                  <div className="manager-heading"><div><h3>实验室人员</h3><span>共 {Object.keys(profiles).length} 人</span></div><button type="button" className="primary-button" onClick={() => openMemberEditor(null)}>＋ 添加人员</button></div>
+                  <div className="manager-list">{Object.values(profiles).sort((a,b) => ({faculty:1,phd:2,graduate:3}[a.group] - {faculty:1,phd:2,graduate:3}[b.group]) || a.sortOrder - b.sortOrder).map(member => <article className="manager-member" key={member.id}>
+                    <span className="manager-avatar">{member.avatar ? <img src={member.avatar} alt=""/> : member.name.split(" ").map(part => part[0]).join("")}</span>
+                    <div><strong>{member.chineseName || member.name}</strong><span>{member.name} · {{faculty:"教师",phd:"博士生",graduate:"研究生"}[member.group]}</span></div>
+                    <div className="manager-actions"><button type="button" onClick={() => openMemberEditor(member)}>编辑</button><button type="button" className="danger" onClick={() => deleteMember(member)}>删除</button></div>
+                  </article>)}</div>
+                </section>
+              </div> : <form className="admin-card admin-login" onSubmit={loginAdmin}>
+                <h2>管理员登录</h2><p>本站不开放注册，仅管理员账号可以进入。</p>
+                <label>管理员账号<input name="username" autoComplete="username" required/></label>
+                <label>密码<input name="password" type="password" autoComplete="current-password" required/></label>
+                {adminAuth.error && <div className="admin-error" role="alert">{adminAuth.error}</div>}
+                <button className="primary-button" type="submit" disabled={loginPending}>{loginPending ? "正在登录……" : "登录"}</button>
+              </form>}
+          </div>
+        </section> : <>
         <section className="profile-section">
           <div className="container profile-grid">
             <div className="avatar">
-              {avatarImage
-                ? <img src={avatarImage} alt={`${profile.name}头像`}/>
+              {profile.avatar
+                ? <img src={profile.avatar} alt={`${profile.name}头像`}/>
                 : <svg viewBox="0 0 120 120" role="img" aria-label={`${profile.name}默认头像`}><circle cx="60" cy="60" r="60" fill="#e9e9ff"/><circle cx="60" cy="43" r="22" fill="#6c63d9"/><path d="M22 106c5-28 20-42 38-42s33 14 38 42" fill="#5148bd"/><path d="M36 39c4-19 44-22 49 5-13-3-20-10-24-17-3 8-12 13-25 12" fill="#27234d"/></svg>}
-              <input ref={avatarInputRef} className="avatar-input" type="file" accept="image/jpeg,image/png,image/webp" onChange={uploadAvatar}/>
-              <button className="avatar-upload" type="button" aria-label="上传头像图片" title="上传头像图片" onClick={() => avatarInputRef.current?.click()}><CameraIcon/></button>
             </div>
             <div className="profile-main">
               <div className="name-row"><h1>{profile.name}</h1><span>{profile.chineseName}</span></div>
@@ -808,7 +1075,6 @@ function App() {
               <ResearchLinks
                 topics={profile.research}
                 onSelect={setQuery}
-                onEdit={() => notify("研究方向修改功能待接入")}
               />
               {(profile.homepage || profile.orcid) && <div className="profile-links">
                 {profile.homepage && <a href={profile.homepage} target="_blank" rel="noreferrer">Homepage ↗</a>}
@@ -821,12 +1087,13 @@ function App() {
 
         <div className="container content-grid">
           <section className="papers-panel">
-            <div className="section-heading"><div><h2>论文成果</h2><p>共 {profilePapers.length} 篇 · 筛选结果 {visible.length} 篇{visible.length > 0 && ` · 第 ${safePage}/${totalPages} 页`}</p></div><button className="primary-button" onClick={() => setAddOpen(true)}>＋ 添加论文</button></div>
+            <div className="section-heading"><div><h2>论文成果</h2><p>共 {profilePapers.length} 篇 · 筛选结果 {visible.length} 篇{visible.length > 0 && ` · 第 ${safePage}/${totalPages} 页`}</p><p className="quartile-standard" title={QUARTILE_STANDARD}>分区口径：{QUARTILE_STANDARD}</p></div></div>
             <div className="filters">
               <label className="paper-search"><SearchIcon/><input value={query} onChange={e => setQuery(e.target.value)} placeholder="在成果中搜索关键词"/></label>
-              <select value={year} onChange={e => setYear(e.target.value)} aria-label="按年份筛选"><option value="all">全部年份</option>{[2026,2025,2024,2023].map(y => <option key={y}>{y}</option>)}</select>
+              <select value={year} onChange={e => setYear(e.target.value)} aria-label="按年份筛选"><option value="all">全部年份</option>{profileYears.map(y => <option key={y}>{y}</option>)}</select>
+              <button type="button" className={firstAuthorOnly ? "first-author-toggle active" : "first-author-toggle"} aria-pressed={firstAuthorOnly} onClick={() => setFirstAuthorOnly(value => !value)} title={firstAuthorOnly ? "显示全部论文" : "只显示第一作者论文"}>第一作者</button>
             </div>
-            <div className="paper-table-head"><input type="checkbox" aria-label="选择全部论文"/><span>标题</span><button type="button" className={sort.key === "citations" ? "active" : ""} onClick={() => changeSort("citations")} aria-label={`按引用次数${sort.key === "citations" && sort.direction === "desc" ? "升序" : "降序"}排列`}>引用次数{arrow("citations")}</button><button type="button" className={sort.key === "year" ? "active" : ""} onClick={() => changeSort("year")} aria-label={`按年份${sort.key === "year" && sort.direction === "desc" ? "升序" : "降序"}排列`}>年份{arrow("year")}</button><span className="download-heading">下载</span></div>
+            <div className="paper-table-head"><input type="checkbox" aria-label="选择全部论文"/><span>标题</span><button type="button" className={sort.key === "citations" ? "active" : ""} onClick={() => changeSort("citations")} aria-label={`按引用次数${sort.key === "citations" && sort.direction === "desc" ? "升序" : "降序"}排列`}>引用次数{arrow("citations")}</button><button type="button" className={sort.key === "year" ? "active" : ""} onClick={() => changeSort("year")} aria-label={`按年份${sort.key === "year" && sort.direction === "desc" ? "升序" : "降序"}排列`}>年份{arrow("year")}</button><span className="quartile-heading" title={QUARTILE_STANDARD}>期刊分区</span><span className="download-heading">下载</span></div>
             <div className="paper-list">
               {paginatedPapers.map(paper => (
                 <article className="paper" key={paper.id}>
@@ -838,12 +1105,16 @@ function App() {
                   </div>
                   <span className="paper-citations">{paper.citations ?? "—"}</span>
                   <span className="paper-year">{paper.year}</span>
+                  <div className="paper-quartiles" aria-label={`${paper.venue}期刊分区`}>
+                    <span>{journalQuartiles(paper.venue).sci}</span>
+                    <span>{journalQuartiles(paper.venue).cas}</span>
+                  </div>
                   {paper.pdfAsset
                     ? <a className="paper-download" href={paper.pdfAsset} download={paper.pdfAsset.split("/").at(-1)} aria-label={`下载论文：${paper.title}`} title="下载本地 PDF">下载</a>
                     : <button className="paper-download" type="button" disabled aria-label={`暂无本地文件：${paper.title}`} title="暂无本地 PDF">下载</button>}
                 </article>
               ))}
-              {!visible.length && <div className="empty"><SearchIcon/><h3>未找到匹配论文</h3><p>请尝试更换关键词或年份筛选。</p><button onClick={() => {setQuery("");setYear("all");}}>清除筛选</button></div>}
+              {!visible.length && <div className="empty"><SearchIcon/><h3>未找到匹配论文</h3><p>请尝试更换关键词、年份或第一作者筛选。</p><button onClick={() => {setQuery("");setYear("all");setFirstAuthorOnly(false);}}>清除筛选</button></div>}
             </div>
             {totalPages > 1 && <nav className="pagination" aria-label="论文分页">
               <button disabled={safePage === 1} onClick={() => setCurrentPage(page => Math.max(1, page - 1))}>上一页</button>
@@ -874,6 +1145,23 @@ function App() {
       {detail && <div className="modal-backdrop" onMouseDown={e => e.target === e.currentTarget && setDetail(null)}><div className="modal detail-modal" role="dialog" aria-modal="true"><button className="modal-close" onClick={() => setDetail(null)}><CloseIcon/></button><span className="eyebrow">论文详情 · {detail.year}</span><h2>{detail.title}</h2><p className="detail-authors">{detail.authors}</p><div className="detail-info"><div><span>发表刊物</span><b>{detail.venue}</b></div><div><span>引用次数</span><b>{detail.citations ?? "未收录"}</b></div><div><span>开放获取</span><b>{detail.open ? "是" : "否"}</b></div></div>{detail.citationUpdatedAt && <p className="demo-note">引用数据核对于 {detail.citationUpdatedAt}</p>}<h4>摘要</h4><p className="abstract">{detail.abstract}</p><div className="doi"><span>DOI</span><code>{detail.doi}</code></div><div className="modal-actions"><button onClick={() => notify("引用已复制（演示）")}>复制引用</button><button className="primary-button" onClick={() => detail.doi.startsWith("10.") ? window.open(`https://doi.org/${detail.doi}`, "_blank", "noopener,noreferrer") : notify("该论文 DOI 尚未公开")}>访问论文 ↗</button></div></div></div>}
 
       {addOpen && <div className="modal-backdrop" onMouseDown={e => e.target === e.currentTarget && setAddOpen(false)}><form className="modal add-modal" onSubmit={addPaper}><button type="button" className="modal-close" onClick={() => setAddOpen(false)}><CloseIcon/></button><span className="eyebrow">添加成果 · {profile.name}</span><h2>添加一篇论文</h2><p>当前为本地演示数据，刷新页面后不会保留。</p><label>英文标题<input name="title" required placeholder="Paper title"/></label><label>作者列表<input name="authors" required defaultValue={profile.name} placeholder={`${profile.name}, ...`}/></label><div className="form-grid"><label>期刊或会议<input name="venue" required placeholder="Journal name"/></label><label>发表年份<input name="year" type="number" min="1900" max="2030" defaultValue="2026" required/></label></div><div className="form-grid"><label>关键词<input name="keyword" placeholder="AI for Science"/></label><label>DOI<input name="doi" placeholder="10.xxxx/xxxx"/></label></div><label className="checkbox"><input name="open" type="checkbox"/> 该论文为开放获取</label><div className="modal-actions"><button type="button" onClick={() => setAddOpen(false)}>取消</button><button className="primary-button" type="submit">添加论文</button></div></form></div>}
+      {memberEditorOpen && <div className="modal-backdrop" onMouseDown={event => event.target === event.currentTarget && !memberSaving && setMemberEditorOpen(false)}><form className="modal member-modal" onSubmit={saveMember}>
+        <button type="button" className="modal-close" aria-label="关闭人员编辑" onClick={() => setMemberEditorOpen(false)} disabled={memberSaving}><CloseIcon/></button>
+        <span className="eyebrow">人员管理</span><h2>{editingMember ? "编辑成员资料" : "添加实验室人员"}</h2><p className="form-intro">带 * 的项目为必填。研究方向可使用逗号分隔。</p>
+        <div className="form-grid"><label>中文名<input name="chineseName" defaultValue={editingMember?.chineseName || ""}/></label><label>英文名 *<input name="name" required defaultValue={editingMember?.name || ""} placeholder="English Name"/></label></div>
+        <div className="form-grid"><label>主页地址 *<input name="slug" required defaultValue={editingMember?.slug || ""} placeholder="firstname-lastname" pattern="[a-z0-9]+(?:-[a-z0-9]+)*"/></label><label>成员分组 *<select name="group" defaultValue={editingMember?.group || "graduate"}><option value="faculty">教师</option><option value="phd">博士生</option><option value="graduate">研究生</option></select></label></div>
+        <div className="form-grid"><label>英文身份<input name="role" defaultValue={editingMember?.role || ""} placeholder="Ph.D. Student"/></label><label>中文身份<input name="roleCn" defaultValue={editingMember?.roleCn || ""} placeholder="博士研究生"/></label></div>
+        <label>单位<input name="affiliation" defaultValue={editingMember?.affiliation || ""}/></label>
+        <label>单位网址<input name="affiliationUrl" type="url" defaultValue={editingMember?.affiliationUrl || ""} placeholder="https://"/></label>
+        <div className="form-grid"><label>邮箱<input name="email" defaultValue={editingMember?.email || ""}/></label><label>邮箱说明<input name="emailNote" defaultValue={editingMember?.emailNote || ""} placeholder="联系邮箱"/></label></div>
+        <label>研究方向<textarea name="research" rows="3" defaultValue={(editingMember?.research || []).join("，")}/></label>
+        <label>成员头像<input name="avatar" type="file" accept="image/jpeg,image/png,image/webp"/></label>
+        {editingMember?.avatar && <div className="avatar-edit-row"><img src={editingMember.avatar} alt="当前成员头像"/><label className="checkbox"><input name="removeAvatar" type="checkbox"/> 删除当前头像</label></div>}
+        <div className="form-grid"><label>个人主页<input name="homepage" type="url" defaultValue={editingMember?.homepage || ""} placeholder="https://"/></label><label>ORCID<input name="orcid" type="url" defaultValue={editingMember?.orcid || ""} placeholder="https://orcid.org/"/></label></div>
+        <div className="form-grid compact-fields"><label>排序值<input name="sortOrder" type="number" min="0" max="9999" defaultValue={editingMember?.sortOrder ?? 0}/></label><label className="checkbox"><input name="verified" type="checkbox" defaultChecked={editingMember?.verified || false}/> 邮箱信息已核验</label></div>
+        {memberError && <div className="admin-error" role="alert">{memberError}</div>}
+        <div className="modal-actions"><button type="button" onClick={() => setMemberEditorOpen(false)} disabled={memberSaving}>取消</button><button className="primary-button" type="submit" disabled={memberSaving}>{memberSaving ? "正在保存……" : "保存成员"}</button></div>
+      </form></div>}
       {toast && <div className="toast"><CheckIcon/>{toast}</div>}
     </div>
   );

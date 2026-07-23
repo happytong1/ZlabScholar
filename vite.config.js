@@ -42,5 +42,10 @@ function localPapers() {
 }
 
 export default defineConfig({
-  plugins: [react(), localPapers()]
+  plugins: [react(), localPapers()],
+  server: {
+    proxy: {
+      "/api": "http://127.0.0.1:3000"
+    }
+  }
 });
